@@ -7,6 +7,7 @@
 * 本文档使用[docsify](https://docsify.js.org/#/zh-cn/)构建。
 * 项目工程见[EditorUIExtention](https://github.com/busyoGG/EditorUIExtention)。
 * 编辑器脚本需要继承 `BaseEditor`。
+* 项目原理说明见[Unity-编辑器UI开发优化框架EditorUIExtension](https://busyo.buzz/article/497b56da32cd/)。
 
 <!-- * `_sidebar.md` 文件为侧边栏导航配置文件。 -->
 
