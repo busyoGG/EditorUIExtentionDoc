@@ -6,6 +6,7 @@
 
 * 本文档使用[docsify](https://docsify.js.org/#/zh-cn/)构建。
 * 项目工程见[EditorUIExtention](https://github.com/busyoGG/EditorUIExtention)。
+* 编辑器脚本需要继承 `BaseEditor`。
 
 <!-- * `_sidebar.md` 文件为侧边栏导航配置文件。 -->
 
