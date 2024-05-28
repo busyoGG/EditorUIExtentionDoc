@@ -51,7 +51,6 @@ window.AfterProcess = {
     var eles = document.querySelectorAll("h2");
     var picker = window.getComputedStyle;
     for (let i = 0, len = eles.length; i < len; i++) {
-      if(eles[i].id == "") continue;
       let child = eles[i].firstChild;
       let eleStyle = picker(eles[i]);
       //创建标识
@@ -112,7 +111,7 @@ window.AfterProcess = {
     for (let i = 0, len = eles.length; i < len; i++) {
       let child = eles[i];
 
-      if (i > 1 ) {
+      if (i > 1) {
         child.className = "ul_close";
       }
 
@@ -157,10 +156,61 @@ window.AfterProcess = {
     // }
   },
 
+  InitVideo: () => {
+    let videos = document.getElementsByTagName("video");
+    for (let index = 0; index < videos.length; index++) {
+      let ele = videos[index];
+      let player = new Plyr(ele, {
+        controls: [
+          'play-large', // The large play button in the center
+          'play', // Play/pause playback
+          'restart', // Restart playback
+          'progress', // The progress bar and scrubber for playback and buffering
+          'current-time', // The current time of playback
+          'duration', // The full duration of the media
+          'mute', // Toggle mute
+          'volume', // Volume control
+          'captions', // Toggle captions
+          'settings', // Settings menu
+          'pip', // Picture-in-picture (currently Safari only)
+          'airplay', // Airplay (currently Safari only)
+          'download', // Show a download button with a link to either the current source or a custom URL you specify in your options
+          'fullscreen', // Toggle fullscreen
+        ]
+       });
+    }
+    
+
+     // 监听全屏状态变化
+     document.addEventListener('fullscreenchange', handleFullscreenChange);
+     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+     document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+     document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+     function handleFullscreenChange() {
+         var fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+         
+         if (fullscreenElement) {
+            //  fullscreenStateDiv.textContent = '当前是全屏状态';
+            for (let index = 0; index < videos.length; index++) {
+              let ele = videos[index];
+              ele.classList.add("full-screen")
+            }
+         } else {
+            //  fullscreenStateDiv.textContent = '当前不是全屏状态';
+            for (let index = 0; index < videos.length; index++) {
+              let ele = videos[index];
+              ele.classList.remove("full-screen")
+            }
+         }
+     }
+  },
+
   Init: () => {
     console.log("初始化界面");
     AfterProcess.ResetCodeStyle();
     AfterProcess.ResetTitle();
+    AfterProcess.InitVideo();
     setTimeout(() => {
       AfterProcess.ResetList();
     }, 1);

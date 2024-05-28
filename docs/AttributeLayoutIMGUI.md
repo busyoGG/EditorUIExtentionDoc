@@ -1,13 +1,13 @@
-# 布局标签
+# IMGUI 布局特性
 
 > 注：布局标签严格按照布局顺序添加。
 > 例如：
 > ```C# 
-> //参数1代表是否开始布局，参数2代表折叠标题
-> [E_Texture, ES_Size(70, 70), EL_Foldout(true, "折叠"),EL_Horizontal(true)]
+> //参数 1 代表是否开始布局，参数 2 代表折叠标题
+> [E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_Foldout(true, "折叠"),EL_Horizontal(true)]
 > public Texture foldout1;
 > //折叠布局标签需要成对使用
-> [E_Texture, ES_Size(70, 70), EL_Horizontal(false),EL_Foldout(false)]
+> [E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_Horizontal(false),EL_Foldout(false)]
 > public Texture foldout2;
 > ```
 > 顺序为 EL_Foldout(true) > EL_Horizontal(true) > EL_Horizontal(false) > EL_Foldout(false) 
@@ -22,12 +22,12 @@
 
 ```C# 
 //传入一个参数，true代表开始布局，false代表结束布局
-[E_Texture, ES_Size(70, 70), EL_Horizontal(true)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_Horizontal(true)]
 public Texture horizontal1;
-[E_Texture, ES_Size(70, 70)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70)]
 public Texture horizontal2;
 //水平布局标签需要成对使用
-[E_Texture, ES_Size(70, 70), EL_Horizontal(false)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_Horizontal(false)]
 public Texture horizontal3;
 ```
 
@@ -41,12 +41,12 @@ public Texture horizontal3;
 
 ```C# 
 //传入一个参数，true代表开始布局，false代表结束布局
-[E_Texture, ES_Size(70, 70), EL_Vertical(true)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_Vertical(true)]
 public Texture vertical1;
-[E_Texture, ES_Size(70, 70)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70)]
 public Texture vertical2;
 //竖直布局标签需要成对使用
-[E_Texture, ES_Size(70, 70), EL_Vertical(false)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_Vertical(false)]
 public Texture vertical3;
 ```
 
@@ -62,10 +62,10 @@ public Texture vertical3;
 
 ```C# 
 //参数1代表是否开始布局，参数2代表折叠标题
-[E_Texture, ES_Size(70, 70), EL_Foldout(true, "折叠")]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_Foldout(true, "折叠")]
 public Texture foldout1;
 //折叠布局标签需要成对使用
-[E_Texture, ES_Size(70, 70), EL_Foldout(false)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_Foldout(false)]
 public Texture foldout2;
 ```
 
@@ -96,46 +96,46 @@ public Texture foldout2;
 
 ### 使用方法
 
-> 注：列表一定要传入ES_Size配合使用，ES_Size表示当前子对象的大小
+> 注：列表一定要传入 ES_Size 配合使用，ES_Size 表示当前子对象的大小
 
 ```C# 
 //竖式布局
 //参数1代表是否开始布局，参数2代表列表类型，参数3代表是否单参数列表
-[E_Texture, ES_Size(70, 70), EL_List(true, EL_ListType.Verticle, false)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_List(true, EL_ListType.Verticle, false)]
 public Texture listV1;
-[E_Texture, ES_Size(70, 70)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70)]
 public Texture listV2;
 //不是单参数列表的情况下需要成对使用列表标签
-[E_Texture, ES_Size(70, 70), EL_List(false)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_List(false)]
 public Texture listV3;
 
 //水平布局
-[E_Texture, ES_Size(70, 70), EL_List(true, EL_ListType.Horizontal, false)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_List(true, EL_ListType.Horizontal, false)]
 public Texture listH1;
-[E_Texture, ES_Size(70, 70)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70)]
 public Texture listH2;
-[E_Texture, ES_Size(70, 70), EL_List(false)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_List(false)]
 public Texture listH3;
 
 //流式布局
-[E_Texture, ES_Size(70, 70), EL_List(true, EL_ListType.Flex, false)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_List(true, EL_ListType.Flex, false)]
 public Texture listF1;
-[E_Texture, ES_Size(70, 70)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70)]
 public Texture listF2;
-[E_Texture, ES_Size(70, 70), EL_List(false)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_List(false)]
 public Texture listF3;
 
 //滚动面板-竖式布局
 //参数4代表列表是否滚动，参数5代表宽度，参数6代表高度，参数7代表宽高类型
-[E_Texture, ES_Size(70, 70), EL_List(true, EL_ListType.Verticle, false, true, 100, 100, ESPercent.Width)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_List(true, EL_ListType.Verticle, false, true, 100, 100, ESPercent.Width)]
 public Texture listS1;
-[E_Texture, ES_Size(70, 70)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70)]
 public Texture listS2;
-[E_Texture, ES_Size(70, 70), EL_List(false)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_List(false)]
 public Texture listS3;
 
 //单参数-竖式布局
 //单参数列表需要设置参数3为true，列表标签只需要一个即可
-[E_Texture, ES_Size(70, 70), EL_List(true, EL_ListType.Verticle, true, true, 100, 100, ESPercent.Width)]
+[E_Editor(EType.Object),E_DataType(DataType.Texture), ES_Size(70, 70), EL_List(true, EL_ListType.Verticle, true, true, 100, 100, ESPercent.Width)]
 public List<Texture> singleList = new List<Texture>() { null, null, null };
 ```

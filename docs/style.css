@@ -1,11 +1,11 @@
 p {
-    font-size: 18px !important;
+    font-size: 20px !important;
     /* font-weight: bold; */
     /* color:aliceblue */
 }
 
 li {
-    font-size: 18px !important;
+    font-size: 20px !important;
     /* font-weight: bold; */
     /* color:aliceblue */
 }
@@ -25,14 +25,84 @@ pre {
     border: 3px solid;
     border-color: grey;
     border-radius: 20px;
-    padding: 0px 10px 0px 10px !important;
-}
-
-code {
-    font-size: 14px !important;
+    padding: 5px 10px 5px 10px !important;
 }
 
 /* .h2_line:before {
     content: '';
     margin-top: -32px;
 } */
+
+video {
+    max-width: 100% !important; 
+    min-width: auto !important; 
+    max-height: 70vh !important; 
+    min-height: auto !important; 
+    object-fit: contain !important;
+}
+
+.full-screen{
+    max-height: 100% !important;
+}
+
+.plyr{
+    display: inline-block !important;
+    border-radius: 15px !important;
+    box-shadow: 0px 0px 20px !important;
+    --bpx-box-shadow: var(--bg3) !important;
+}
+
+.plyr__controls{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start !important;
+    padding: 10px;
+    position: relative;
+    /* overflow: hidden;  */
+}
+
+.plyr__progress__container{
+    /* order: 1; */
+    min-width: 20% !important;
+}
+
+.plyr__control[data-plyr="captions"]{
+    display: none !important;
+}
+
+input[data-plyr="volume"] {
+    writing-mode: bt-lr !important; /* 从下到上排列 */
+    -webkit-appearance: slider-vertical !important; /* WebKit 浏览器 */
+    width: 20px !important; /* 宽度 */
+    height: 100px !important; /* 高度 */
+    bottom: 100px !important;
+    min-width: 0px !important;
+    display: none !important; 
+}
+
+.plyr__volume {
+    height: 32px;
+    width: 32px;
+    flex-direction: column;
+    overflow: visible;
+}
+
+.plyr__control[data-plyr="mute"]{
+    position: absolute;
+    bottom: 0px;
+}
+
+input[data-plyr="volume"]::-webkit-slider-runnable-track {
+    background-image: linear-gradient(to top,currentColor var(--value,0),#0000 var(--value,0)) !important;
+    border-radius: 5px !important; /* 设置轨道圆角 */
+    width: 10px !important; /* 设置轨道宽度 */
+    height: 100px !important; /* 设置轨道高度 */
+}
+
+input[data-plyr="volume"]::-webkit-slider-thumb {
+    left:3px !important;
+}
+
+.plyr__volume:hover input[data-plyr="volume"] {
+    display: block !important; /* 鼠标悬停时显示 */
+}

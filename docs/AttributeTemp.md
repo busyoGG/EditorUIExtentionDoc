@@ -1,25 +1,110 @@
 # 标签模板
 
-## UI模板
+## UI 模板
 
-> 标签
+> 在 EENum 文件中增加类型枚举即可
 
 ```C# 
-using System;
-using System.Runtime.CompilerServices;
-
-//作用域
-[AttributeUsage(AttributeTargets.Field)]
-public class E_Label : EBase
+public enum EType
 {
-    //[CallerLineNumber] int lineNumber = 0 必写参数，用来判断对象声明顺序
-    public E_Label([CallerLineNumber] int lineNumber = 0) {
-        _lineNum = lineNumber;
+    Button,
+    Input,
+    Label,
+    Object,
+    Enum,
+    Slider,
+    Toggle,
+    Radio
+}
+```
+
+<!-- tabs:start -->
+
+### **VE**
+
+> VisualElement UI 匹配逻辑 => BaseEditorVE.Init 和 BaseEditorVE.GenerateListItem 中更新
+
+**普通 UI**
+
+```C# 
+private void Init()
+{
+    //一些前置逻辑和变量
+
+    foreach (var item in members)
+    {
+        MemberInfo member = item.Member;
+
+        VE_Box veBox = member.GetCustomAttribute<VE_Box>();
+        bool isCreate = veBox?.IsCreate() ?? false;
+        string boxName = veBox?.GetName() ?? "";
+
+        E_Editor editor = member.GetCustomAttribute<E_Editor>();
+
+        if (editor != null)
+        {
+            //一些前置逻辑和变量
+
+            if (isList)
+            {
+                //创建List的逻辑
+            }
+            else
+            {
+                switch (eType)
+                {
+                    case EType.Label:
+                        Label label = new Label();
+                        label.style.fontSize = _fontSize;
+                        label.text = value.ToString();
+
+                        InitInnerStyle(member, label);
+
+                        box.Add(label);
+                        break;
+                    //其他case
+                }
+            }
+        }
+        else if (isCreate)
+        {
+            //创建Box的逻辑
+        }
     }
 }
 ```
 
-> UI生成器 => UIGenerator中新增
+**List UI**
+
+```C# 
+/// <summary>
+/// 生成列表元素
+/// </summary>
+/// <param name="member"></param>
+/// <param name="eType"></param>
+/// <param name="data"></param>
+/// <returns></returns>
+private VisualElement GenerateListItem(MemberInfo member, EType eType, object data, Action<Object> setData)
+{
+    switch (eType)
+    {
+        case EType.Object:
+            VisualElement obj = new VisualElement();
+            obj.name = "Texture";
+            VEStyleUtils.SetMargin(obj.style, 5, 0, 0, 5);
+
+            //具体逻辑
+
+            return obj;
+    }
+
+    return null;
+}
+```
+
+### **IMGUI**
+
+> IMGUI UI 生成器 => UIGenerator 中新增
 
 ```C# 
 /// <summary>
@@ -39,7 +124,7 @@ public static Action<GUIStyle, GUILayoutOption[]> GenerateLabel(Func<string> lab
 }
 ```
 
-> UI匹配逻辑 => BaseEditor.SetUI中更新
+> IMGUI UI 匹配逻辑 => BaseEditorIMGUI.SetUI 中更新
 
 ```C# 
 /// <summary>
@@ -102,6 +187,8 @@ private UIListData SetUI(MemberInfo member, object ui, List<object> styles, stri
 }
 ```
 
+<!-- tabs:end -->
+
 ## 样式模板
 
 > 标签
@@ -119,7 +206,172 @@ public class ES_Size : Attribute
 }
 ```
 
-> UI匹配逻辑 => BaseEditor.SetStyle和BaseEditor.SetOption中更新
+<!-- tabs:start -->
+### **VE**
+
+> UI 匹配逻辑 => BaseEditorVE.InitInnerStyle 和 BaseEditorVE.InitStyle
+
+**注意：**
+1. 样式匹配需要加入到 attrs 数组。
+2. 内联样式涉及各种状态，因此需要监听不同状态的触发来设置不同状态下的样式。
+3. 内联样式具有返回值，返回是否有设置样式，有些需要根据是否设置内联样式而进行的 UI 元素特殊处理可以通过 `if(InitInnerStyle())` 后执行。 
+
+```C# 
+/// <summary>
+/// 设置内联样式
+/// </summary>
+/// <param name="member"></param>
+/// <param name="style"></param>
+private bool InitInnerStyle(MemberInfo member, VisualElement ele)
+{
+    bool isSet = true;
+
+    int count = 0;
+
+    VisualElement inputListener = null;
+
+    bool isFocus = false;
+
+    //匹配的样式列表
+    List<object> attrs = new List<object>()
+            {
+                member.GetCustomAttribute<ES_BgColor>(),
+                member.GetCustomAttribute<ES_FontColor>(),
+                member.GetCustomAttribute<ES_Border>(),
+                member.GetCustomAttribute<ES_BorderColor>(),
+                member.GetCustomAttribute<ES_Radius>(),
+                member.GetCustomAttribute<ES_Size>()
+            };
+
+    Action onMouseDown = null;
+    Action onMouseUp = null;
+    Action onMouseHover = null;
+    Action onMouseOut = null;
+    Action onFocus = null;
+    Action onNotFocus = null;
+
+    foreach (var attr in attrs)
+    {
+        if (attr == null)
+        {
+            count++;
+            continue;
+        }
+
+        switch (attr)
+        {
+            case ES_BgColor bgColor:
+                ele.style.backgroundColor = bgColor.GetColor();
+                onMouseDown += () =>
+                {
+                    Color buttonColor = bgColor.GetColor() * 0.8f;
+                    buttonColor.a = 1;
+                    ele.style.backgroundColor = buttonColor;
+                };
+
+                onMouseUp += () => { ele.style.backgroundColor = bgColor.GetColor(); };
+
+                onMouseHover += () =>
+                {
+                    if (_isLeftMouseDown)
+                    {
+                        Color buttonColor = bgColor.GetColor() * 0.8f;
+                        buttonColor.a = 1;
+                        ele.style.backgroundColor = buttonColor;
+                    }
+                    else
+                    {
+                        Color buttonColor = bgColor.GetColor() + new Color(0.5f, 0.5f, 0.5f);
+                        ele.style.backgroundColor = buttonColor;
+                    }
+                };
+
+                onMouseOut += () => { ele.style.backgroundColor = bgColor.GetColor(); };
+
+                break;
+            //其他case
+        }
+    }
+
+    if (count == attrs.Count)
+    {
+        isSet = false;
+    }
+
+    if (isSet)
+    {
+        ele.RegisterCallback<MouseDownEvent>(evt => { onMouseDown?.Invoke(); });
+
+        ele.RegisterCallback<MouseUpEvent>(evt => { onMouseUp?.Invoke(); });
+
+        ele.RegisterCallback<MouseOverEvent>(evt => { onMouseHover?.Invoke(); });
+
+        ele.RegisterCallback<MouseOutEvent>(evt => { onMouseOut?.Invoke(); });
+
+        if (inputListener != null)
+        {
+            inputListener.RegisterCallback<FocusInEvent>(evt => { onFocus?.Invoke(); });
+
+            inputListener.RegisterCallback<FocusOutEvent>(evt => { onNotFocus?.Invoke(); });
+        }
+        else
+        {
+            ele.RegisterCallback<FocusInEvent>(evt => { onFocus?.Invoke(); });
+
+            ele.RegisterCallback<FocusOutEvent>(evt => { onNotFocus?.Invoke(); });
+        }
+    }
+
+    return isSet;
+}
+```
+
+**该样式初始化目前只有创建 Box 使用，没有任何监听项目。**
+
+```C# 
+/// <summary>
+/// 初始化样式
+/// </summary>
+/// <param name="ele"></param>
+/// <param name="attrs"></param>
+private void InitStyle(VisualElement ele, dynamic attrs)
+{
+    //遍历 Attribute 设置容器样式
+    foreach (var attr in attrs)
+    {
+        switch (attr)
+        {
+            case ES_Size size:
+                switch (size.GetSizeType())
+                {
+                    case ESPercent.All:
+                        ele.style.width = Length.Percent(size.GetWidth());
+                        ele.style.height = Length.Percent(size.GetHeight());
+                        break;
+                    case ESPercent.Height:
+                        ele.style.width = size.GetWidth();
+                        ele.style.height = Length.Percent(size.GetHeight());
+                        break;
+                    case ESPercent.Width:
+                        ele.style.width = Length.Percent(size.GetWidth());
+                        ele.style.height = size.GetHeight();
+                        break;
+                    default:
+                        ele.style.width = size.GetWidth();
+                        ele.style.height = size.GetHeight();
+                        break;
+                }
+
+                break;
+            //其他case
+        }
+    }
+}
+```
+
+### **IMGUI**
+
+> UI 匹配逻辑 => BaseEditorIMGUI.SetStyle 和 BaseEditorIMGUI.SetOption 中更新
 
 ```C# 
 /// <summary>
@@ -199,7 +451,29 @@ private Func<GUILayoutOption[]> SetOption(object ui, List<object> styles = null)
 }
 ```
 
+<!-- tabs:end -->
+
+
 ## 布局模板
+
+<!-- tabs:start -->
+
+### **VE**
+
+> 标签
+
+```C#
+using System;
+
+public class VE_Box : Attribute
+{
+    
+}
+```
+
+> 布局逻辑 ==> BaseEditorVE.Init 中自行修改，目前只有创建 Box 和创建 Editor UI 两种情况
+
+### **IMGUI**
 
 > 标签
 
@@ -224,7 +498,7 @@ public class EL_Horizontal : Attribute
 }
 ```
 
-> 布局生成器 => LayoutGenerator中新增
+> 布局生成器 => LayoutGenerator 中新增
 
 ```C# 
 /// <summary>
@@ -245,7 +519,7 @@ public static Action<GUIStyle, GUILayoutOption[]> GenerateHorizontal(Action rend
 }
 ```
 
-> UI匹配逻辑 => BaseEditor.SetStyle和BaseEditor.SetOption中更新
+> UI 匹配逻辑 => BaseEditorIMGUI.SetStyle 和 BaseEditorIMGUI.SetOption 中更新
 
 ```C#
 /// <summary>
@@ -272,3 +546,4 @@ private Action<GUIStyle, GUILayoutOption[]> SetLayout(object layout, LayoutNode 
     return null;
 }
 ```
+<!-- tabs:end -->
