@@ -4,7 +4,7 @@
 
 > 在 EENum 文件中增加类型枚举即可
 
-```C# 
+```C#
 public enum EType
 {
     Button,
@@ -22,83 +22,35 @@ public enum EType
 
 ### **VE**
 
-> VisualElement UI 匹配逻辑 => BaseEditorVE.Init 和 BaseEditorVE.GenerateListItem 中更新
+> VisualElement UI 匹配逻辑 => BaseEditorVE.GenerateItem 中更新
 
-**普通 UI**
-
-```C# 
-private void Init()
-{
-    //一些前置逻辑和变量
-
-    foreach (var item in members)
-    {
-        MemberInfo member = item.Member;
-
-        VE_Box veBox = member.GetCustomAttribute<VE_Box>();
-        bool isCreate = veBox?.IsCreate() ?? false;
-        string boxName = veBox?.GetName() ?? "";
-
-        E_Editor editor = member.GetCustomAttribute<E_Editor>();
-
-        if (editor != null)
-        {
-            //一些前置逻辑和变量
-
-            if (isList)
-            {
-                //创建List的逻辑
-            }
-            else
-            {
-                switch (eType)
-                {
-                    case EType.Label:
-                        Label label = new Label();
-                        label.style.fontSize = _fontSize;
-                        label.text = value.ToString();
-
-                        InitInnerStyle(member, label);
-
-                        box.Add(label);
-                        break;
-                    //其他case
-                }
-            }
-        }
-        else if (isCreate)
-        {
-            //创建Box的逻辑
-        }
-    }
-}
-```
-
-**List UI**
-
-```C# 
+```C#
 /// <summary>
-/// 生成列表元素
+/// 生成元素
 /// </summary>
+/// <param name="parent"></param>
 /// <param name="member"></param>
 /// <param name="eType"></param>
 /// <param name="data"></param>
-/// <returns></returns>
-private VisualElement GenerateListItem(MemberInfo member, EType eType, object data, Action<Object> setData)
+/// <param name="setData"></param>
+/// <param name="isList"></param>
+private void GenerateItem(VisualElement parent, MemberInfo member, EType eType, object data,
+    Action<object> setData, bool isList = false)
 {
+    //省略辅助数据
     switch (eType)
     {
-        case EType.Object:
-            VisualElement obj = new VisualElement();
-            obj.name = "Texture";
-            VEStyleUtils.SetMargin(obj.style, 5, 0, 0, 5);
+        case EType.Label:
+            Label label = new Label();
+            label.style.fontSize = _fontSize;
+            label.text = data.ToString();
 
-            //具体逻辑
+            InitInnerStyle(member, label);
 
-            return obj;
+            parent.Add(label);
+            break;
+            //其他case
     }
-
-    return null;
 }
 ```
 
@@ -106,7 +58,7 @@ private VisualElement GenerateListItem(MemberInfo member, EType eType, object da
 
 > IMGUI UI 生成器 => UIGenerator 中新增
 
-```C# 
+```C#
 /// <summary>
 /// 生成Label
 /// </summary>
@@ -126,7 +78,7 @@ public static Action<GUIStyle, GUILayoutOption[]> GenerateLabel(Func<string> lab
 
 > IMGUI UI 匹配逻辑 => BaseEditorIMGUI.SetUI 中更新
 
-```C# 
+```C#
 /// <summary>
 /// 设置UI
 /// </summary>
@@ -201,22 +153,24 @@ public class ES_Size : Attribute
 {
     public ES_Size()
     {
-        
+
     }
 }
 ```
 
 <!-- tabs:start -->
+
 ### **VE**
 
 > UI 匹配逻辑 => BaseEditorVE.InitInnerStyle 和 BaseEditorVE.InitStyle
 
 **注意：**
+
 1. 样式匹配需要加入到 attrs 数组。
 2. 内联样式涉及各种状态，因此需要监听不同状态的触发来设置不同状态下的样式。
-3. 内联样式具有返回值，返回是否有设置样式，有些需要根据是否设置内联样式而进行的 UI 元素特殊处理可以通过 `if(InitInnerStyle())` 后执行。 
+3. 内联样式具有返回值，返回是否有设置样式，有些需要根据是否设置内联样式而进行的 UI 元素特殊处理可以通过 `if(InitInnerStyle())` 后执行。
 
-```C# 
+```C#
 /// <summary>
 /// 设置内联样式
 /// </summary>
@@ -328,7 +282,7 @@ private bool InitInnerStyle(MemberInfo member, VisualElement ele)
 
 **该样式初始化目前只有创建 Box 使用，没有任何监听项目。**
 
-```C# 
+```C#
 /// <summary>
 /// 初始化样式
 /// </summary>
@@ -373,7 +327,7 @@ private void InitStyle(VisualElement ele, dynamic attrs)
 
 > UI 匹配逻辑 => BaseEditorIMGUI.SetStyle 和 BaseEditorIMGUI.SetOption 中更新
 
-```C# 
+```C#
 /// <summary>
 /// 设置样式绘制函数
 /// </summary>
@@ -453,7 +407,6 @@ private Func<GUILayoutOption[]> SetOption(object ui, List<object> styles = null)
 
 <!-- tabs:end -->
 
-
 ## 布局模板
 
 <!-- tabs:start -->
@@ -467,7 +420,7 @@ using System;
 
 public class VE_Box : Attribute
 {
-    
+
 }
 ```
 
@@ -500,7 +453,7 @@ public class EL_Horizontal : Attribute
 
 > 布局生成器 => LayoutGenerator 中新增
 
-```C# 
+```C#
 /// <summary>
 /// 生成水平布局
 /// </summary>
@@ -546,4 +499,5 @@ private Action<GUIStyle, GUILayoutOption[]> SetLayout(object layout, LayoutNode 
     return null;
 }
 ```
+
 <!-- tabs:end -->
